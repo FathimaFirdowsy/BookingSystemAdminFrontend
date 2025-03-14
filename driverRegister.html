@@ -24,31 +24,31 @@
                 <h2 class="text-center mb-4">Driver Registration</h2>
                 
                 <form id="driverRegisterForm">
+                    <!-- Name Field -->
                     <div class="mb-3">
                         <label for="name" class="form-label">Full Name</label>
                         <input type="text" class="form-control" id="name" placeholder="Enter your full name" required>
                     </div>
-
+    
+                    <!-- Email Field -->
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
                         <input type="email" class="form-control" id="email" placeholder="Enter your email" required>
                     </div>
-
+    
+                    <!-- Password Field -->
                     <div class="mb-3">
                         <label for="password" class="form-label">Password</label>
-                        <div class="input-group">
-                            <input type="password" class="form-control" id="password" placeholder="Enter your password" required>
-                            <button type="button" class="btn btn-outline-secondary" id="togglePassword">
-                                <i class="bi bi-eye"></i>
-                            </button>
-                        </div>
+                        <input type="password" class="form-control" id="password" placeholder="Enter your password" required>
                     </div>
-                    
+    
+                    <!-- Contact Number Field -->
                     <div class="mb-3">
                         <label for="contact" class="form-label">Contact Number</label>
                         <input type="text" class="form-control" id="contact" placeholder="Enter your contact number" required>
                     </div>
-
+    
+                    <!-- Work Type Dropdown -->
                     <div class="mb-3">
                         <label for="workType" class="form-label">Work Type</label>
                         <select class="form-select" id="workType" required>
@@ -57,7 +57,8 @@
                             <option value="Part-Time">Part-Time</option>
                         </select>
                     </div>
-
+    
+                    <!-- Working Area Dropdown -->
                     <div class="mb-3">
                         <label for="workingArea" class="form-label">Working Area</label>
                         <select class="form-select" id="workingArea" required>
@@ -71,107 +72,102 @@
                             <option value="Maradana">Maradana</option>
                         </select>
                     </div>
-
+    
+                    <!-- Cab Model Dropdown -->
                     <div class="mb-3">
                         <label for="cabModel" class="form-label">Cab Selection</label>
                         <select class="form-select" id="cabModel" required>
                             <option value="" disabled selected>Select Your Cab</option>
-                            <option value="Toyota Prius">Toyota Prius</option>
-                            <option value="Toyota Highlander">Toyota Highlander</option>
-                            <option value="Mercedes-Benz">Mercedes-Benz</option>
-                            <option value="Toyota Sienna">Toyota Sienna</option>
-                            <option value="Suzuki G Wagon">Suzuki G Wagon</option>
-                            <option value="Toyota Plus">Toyota Plus</option>
+                            <!-- Cab models will be populated dynamically -->
                         </select>
                     </div>
-
+    
+                    <!-- License Number Field -->
                     <div class="mb-3">
                         <label for="licenseNo" class="form-label">License Number</label>
                         <input type="text" class="form-control" id="licenseNo" placeholder="Enter your license number" required>
                     </div>
-
+    
                     <button type="submit" class="btn btn-primary w-100">Register</button>
-
-                    <p class="text-center mt-3">Already have an account? <a href="driverLogin.html">Sign in</a></p>
-                    <!-- Error message container -->
-                        <div id="errorMessage" class="alert alert-danger d-none" role="alert"></div>
                 </form>
+                <p class="text-center mt-3">Already have an account? <a href="driverLogin.html">Sign in</a></p>
+                <div id="errorMessage" class="text-danger mt-3" style="display: none;"></div>
             </div>
         </div>
     </div>
-
+    
+    <!-- Script for dynamic dropdowns and form submission -->
     <script>
-        // Show/Hide Password Toggle
-        document.getElementById("togglePassword").addEventListener("click", function () {
-            const passwordField = document.getElementById("password");
-            const icon = this.querySelector("i");
-
-            if (passwordField.type === "password") {
-                passwordField.type = "text";
-                icon.classList.remove("bi-eye");
-                icon.classList.add("bi-eye-slash");
-            } else {
-                passwordField.type = "password";
-                icon.classList.remove("bi-eye-slash");
-                icon.classList.add("bi-eye");
-            }
-        });
-
-
-
-    // Handle Form Submission
-    document.addEventListener("DOMContentLoaded", function () {
-        document.getElementById("driverRegisterForm").addEventListener("submit", function (event) {
-            event.preventDefault();
-
-            let name = document.getElementById("name").value.trim();
-            let email = document.getElementById("email").value.trim();
-            let password = document.getElementById("password").value.trim();
-            let contact = document.getElementById("contact").value.trim();
-            let workType = document.getElementById("workType").value.trim();
-            let workingArea = document.getElementById("workingArea").value.trim();
-            let cabModel = document.getElementById("cabModel").value.trim();
-            let licenseNo = document.getElementById("licenseNo").value.trim();
-            
-            let errorMessage = document.getElementById("errorMessage");
-            errorMessage.classList.add("d-none");
-
-            // Basic validation for required fields
-            if (!name || !email || !password || !contact || !workType || !workingArea || !cabModel || !licenseNo) {
-                errorMessage.textContent = "All fields are required.";
-                errorMessage.classList.remove("d-none");
-                return;
-            }
-
-            // Send data to the backend
-            fetch("http://localhost:9090/BookingSystem/DriverRegisterServlet", {
-                method: "POST",
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: `name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&contact=${encodeURIComponent(contact)}&workType=${encodeURIComponent(workType)}&workingArea=${encodeURIComponent(workingArea)}&cabModel=${encodeURIComponent(cabModel)}&licenseNo=${encodeURIComponent(licenseNo)}`,
-                credentials: "include"
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === "error") {
-                    errorMessage.textContent = data.message;
-                    errorMessage.classList.remove("d-none");
-                } else if (data.status === "success") {
-                    alert("Driver registration successful!");
-                    window.location.href = "driverLogin.html";
+        $(document).ready(function() {
+            // Fetch cab models from the database and populate the dropdown
+            fetch("http://localhost:9090/BookingSystem/GetCabModelsServlet")
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === "success") {
+                        const cabModelSelect = document.getElementById("cabModel");
+                        data.models.forEach(model => {
+                            const option = document.createElement("option");
+                            option.value = model.CabID;
+                            option.textContent = model.Model;
+                            cabModelSelect.appendChild(option);
+                        });
+                    } else {
+                        console.error("Failed to fetch cab models.");
+                    }
+                })
+                .catch(error => console.error("Error fetching cab models:", error));
+    
+            // Handle form submission
+            document.getElementById("driverRegisterForm").addEventListener("submit", function(event) {
+                event.preventDefault();
+    
+                let name = document.getElementById("name").value;
+                let email = document.getElementById("email").value;
+                let password = document.getElementById("password").value;
+                let contact = document.getElementById("contact").value;
+                let workType = document.getElementById("workType").value;
+                let workingArea = document.getElementById("workingArea").value;
+                let cabModel = document.getElementById("cabModel").value;
+                let licenseNo = document.getElementById("licenseNo").value;
+    
+                if (!name || !email || !password || !contact || !workType || !workingArea || !cabModel || !licenseNo) {
+                    document.getElementById("errorMessage").textContent = "All fields are required.";
+                    document.getElementById("errorMessage").style.display = "block";
+                    return;
                 }
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                errorMessage.textContent = "Server error. Please try again.";
-                errorMessage.classList.remove("d-none");
+
+                console.log("Selected Cab Model: ", cabModel);  // Log the selected cab model
+
+                // Send data to the backend servlet
+                fetch("http://localhost:9090/BookingSystem/DriverRegisterServlet", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: `name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&contact=${encodeURIComponent(contact)}&workType=${encodeURIComponent(workType)}&workingArea=${encodeURIComponent(workingArea)}&cabModel=${encodeURIComponent(cabModel)}&licenseNo=${encodeURIComponent(licenseNo)}`,
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === "success") {
+                        alert("Driver registration successful!");
+                        window.location.href = "driverLogin.html"; // Redirect to login page
+                    } else {
+                        document.getElementById("errorMessage").textContent = data.message;
+                        document.getElementById("errorMessage").style.display = "block";
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    document.getElementById("errorMessage").textContent = "Server error. Please try again.";
+                    document.getElementById("errorMessage").style.display = "block";
+                });
             });
         });
-    });
     </script>
+    
 
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.js"></script>
-
-</body>
-</html>
+    
+    </body>
+    </html>
 

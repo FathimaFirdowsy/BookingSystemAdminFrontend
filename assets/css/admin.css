@@ -245,15 +245,7 @@ h2.text-center {
     font-weight: 600;
 }
 
-/* Button to trigger Modal */
-.btn-primary {
-    background-color: #007bff;
-    border-color: #007bff;
-    padding: 10px 20px;
-    font-size: 16px;
-    border-radius: 5px;
-    text-transform: uppercase;
-}
+/* Add button  */
 
 /* Modal Styling */
 .modal-content {
@@ -262,7 +254,7 @@ h2.text-center {
 }
 
 .modal-header {
-    background-color: #007bff;
+    background-color: #0f3460;
     color: white;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
@@ -324,10 +316,10 @@ h2.text-center {
 }
 
 .card .btn {
-    background-color: #28a745;
+    background-color: #0f3460;
     color: white;
     font-weight: bold;
-    padding: 10px 20px;
+    padding: 10px 10px;
     border-radius: 5px;
     text-transform: uppercase;
     border: none;
@@ -335,7 +327,7 @@ h2.text-center {
 }
 
 .card .btn:hover {
-    background-color: #218838;
+    background-color: #0f3460;
 }
 
 /* Responsive Styles */
@@ -362,7 +354,7 @@ h2.text-center {
 #logoutButton {
     position: absolute; /* Position the button absolutely */
     top: 10px; /* 10px from the top */
-    right: 100px; /* 10px from the right */
+    right: 150px; /* 10px from the right */
     z-index: 10; /* Ensure it's above other content */
 }
 

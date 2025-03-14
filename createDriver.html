@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="assets/images/cab_icon.png" />
+    <title>Create Driver | Mega City Cab</title>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/admin.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+
+    <div class="container mt-4">
+        <h2 class="text-center">Create Driver</h2>
+        <form id="createDriverForm">
+            <div class="mb-3">
+                <label for="name" class="form-label">Full Name</label>
+                <input type="text" class="form-control" id="name" placeholder="Enter full name" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" placeholder="Enter email address" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="contact" class="form-label">Contact Number</label>
+                <input type="text" class="form-control" id="contact" placeholder="Enter contact number" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="workType" class="form-label">Work Type</label>
+                <select class="form-select" id="workType" required>
+                    <option value="" disabled selected>Select Work Type</option>
+                    <option value="Full-Time">Full-Time</option>
+                    <option value="Part-Time">Part-Time</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="workingArea" class="form-label">Working Area</label>
+                <select class="form-select" id="workingArea" required>
+                    <option value="" disabled selected>Select Working Area</option>
+                    <option value="Dehiwala">Dehiwala</option>
+                    <option value="Mount-Lavinia">Mount-Lavinia</option>
+                    <option value="Kollupitiya">Kollupitiya</option>
+                    <option value="Bambalapitiya">Bambalapitiya</option>
+                    <option value="Wellawatta">Wellawatta</option>
+                    <option value="Galle Face">Galle Face</option>
+                    <option value="Maradana">Maradana</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="cabModel" class="form-label">Cab Model</label>
+                <select class="form-select" id="cabModel" required>
+                    <option value="" disabled selected>Select Cab Model</option>
+                    <!-- Cab options will be populated dynamically -->
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="licenseNo" class="form-label">License Number</label>
+                <input type="text" class="form-control" id="licenseNo" placeholder="Enter license number" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" placeholder="Enter password" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Create Driver</button>
+        </form>
+    </div>
+
+    <script>
+        // Fetch available cab models and populate the cab model dropdown
+        fetch("http://localhost:9090/BookingSystem/GetCabModelsServlet")
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "success") {
+                    const cabModelSelect = document.getElementById("cabModel");
+                    data.models.forEach(model => {
+                        const option = document.createElement("option");
+                        option.value = model.CabID;
+                        option.textContent = model.Model;
+                        cabModelSelect.appendChild(option);
+                    });
+                } else {
+                    console.error("Failed to fetch cab models.");
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching cab models:", error);
+            });
+
+        // Handle form submission
+        document.getElementById("createDriverForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            const name = document.getElementById("name").value;
+            const email = document.getElementById("email").value;
+            const contact = document.getElementById("contact").value;
+            const workType = document.getElementById("workType").value;
+            const workingArea = document.getElementById("workingArea").value;
+            const cabModel = document.getElementById("cabModel").value;
+            const licenseNo = document.getElementById("licenseNo").value;
+            const password = document.getElementById("password").value;
+
+            const driverData = {
+                name,
+                email,
+                contact,
+                workType,
+                workingArea,
+                cabModel,
+                licenseNo,
+                password
+            };
+
+            fetch("http://localhost:9090/BookingSystem/RegisterDriverServlet", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(driverData),
+                credentials: "include"
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "success") {
+                    alert("Driver created successfully.");
+                    window.location.href = "adminDashboard.html"; // Redirect back to admin dashboard after success
+                } else {
+                    alert("Error: " + data.message);
+                }
+            })
+            .catch(error => {
+                console.error("Error creating driver:", error);
+                alert("There was an error creating the driver. Please try again.");
+            });
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
